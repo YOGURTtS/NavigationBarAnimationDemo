@@ -13,5 +13,8 @@
 - (void)animation_setNavigationBarHidden:(BOOL)hidden translationY:(CGFloat)translationY;
 
 - (void)setTranslationY:(CGFloat)translationY;
+ 
+- (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY;
+
 
 @end

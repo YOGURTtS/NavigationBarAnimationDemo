@@ -46,7 +46,7 @@
     }
 }
 
-- (void)setNavigationBarButtonItems:(BOOL)hidden translationY:(CGFloat)translationY {
+- (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY {
     UIView *rightButtonBarView = [self getRightButtonBarView];
     UIView *leftButtonBarView = [self getLeftButtonBarView];
     CGFloat rightDistance = self.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
