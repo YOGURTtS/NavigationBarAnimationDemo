@@ -6,10 +6,53 @@
 //  Copyright © 2018年 yogurts. All rights reserved.
 //
 
+
 #import "UINavigationController+NavigationBarHiddenAnimation.h"
+#import <objc/runtime.h>
+
 
 @implementation UINavigationController (NavigationBarHiddenAnimation)
 
+static NSString *rightDistanceKey = @"rightDistanceKey";
+static NSString *leftDistanceKey = @"leftDistanceKey";
+
+- (void)setRightDistance:(CGFloat)rightDistance {
+    objc_setAssociatedObject(self, &rightDistanceKey, @(rightDistance), OBJC_ASSOCIATION_ASSIGN);
+}
+
+- (CGFloat)rightDistance {
+    return [objc_getAssociatedObject(self, &rightDistanceKey) floatValue];
+}
+
+- (void)setLeftDistance:(CGFloat)leftDistance {
+    objc_setAssociatedObject(self, &leftDistanceKey, @(leftDistance), OBJC_ASSOCIATION_ASSIGN);
+}
+
+- (CGFloat)leftDistance {
+    return [objc_getAssociatedObject(self, &leftDistanceKey) floatValue];
+}
+
+//+ (void)initialize
+//{
+//    if (self == [UINavigationController class]) {
+//        UIView *rightButtonBarView = [self getRightButtonBarView];
+//        UIView *leftButtonBarView = [self getLeftButtonBarView];
+//        self.rightDistance = self.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
+//        self.leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
+//    }
+//}
+
+//- (instancetype)init
+//{
+//    self = [super init];
+//    if (self) {
+//        UIView *rightButtonBarView = [self getRightButtonBarView];
+//        UIView *leftButtonBarView = [self getLeftButtonBarView];
+//        self.rightDistance = self.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
+//        self.leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
+//    }
+//    return self;
+//}
 
 - (void)animation_setNavigationBarHidden:(BOOL)hidden translationY:(CGFloat)translationY {
     UIView *rightButtonBarView = [self getRightButtonBarView];
@@ -49,11 +92,15 @@
 - (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY {
     UIView *rightButtonBarView = [self getRightButtonBarView];
     UIView *leftButtonBarView = [self getLeftButtonBarView];
-    CGFloat rightDistance = self.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
-    CGFloat leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
-
-    rightButtonBarView.transform = CGAffineTransformTranslate(rightButtonBarView.transform, rightDistance, 0);
-    leftButtonBarView.transform = CGAffineTransformTranslate(leftButtonBarView.transform, -leftDistance, 0);
+    
+    CGFloat rightDistance = self.rightDistance * translationY / 14;
+    CGFloat leftDistance = self.leftDistance * translationY / 14;
+    NSLog(@"rightDistance = %lf , leftDistance = %lf", self.rightDistance, self.leftDistance);
+    
+//    rightButtonBarView.transform = CGAffineTransformTranslate(rightButtonBarView.transform, rightDistance, 0);
+    rightButtonBarView.transform = CGAffineTransformMakeTranslation(rightDistance, translationY);
+//    leftButtonBarView.transform = CGAffineTransformTranslate(leftButtonBarView.transform, -leftDistance, 0);
+    leftButtonBarView.transform = CGAffineTransformMakeTranslation(-leftDistance, translationY);
 }
 
 - (UIView *)getRightButtonBarView {
@@ -118,6 +165,45 @@
 
 - (void)setTranslationY:(CGFloat)translationY {
     self.navigationBar.transform = CGAffineTransformMakeTranslation(0, translationY);
+}
+
+- (void)setBarButtonItemsAlpha:(CGFloat)alpha hasSystemBackIndicator:(BOOL)hasSystemBackIndicator {
+    for (UIView *view in self.navigationBar.subviews) {
+        if (hasSystemBackIndicator == YES)
+        {   // _UIBarBackground/_UINavigationBarBackground对应的view是系统导航栏，不需要改变其透明度
+            Class _UIBarBackgroundClass = NSClassFromString(@"_UIBarBackground");
+            if (_UIBarBackgroundClass != nil) {
+                if ([view isKindOfClass:_UIBarBackgroundClass] == NO) {
+                    view.alpha = alpha;
+                }
+            }
+            
+            Class _UINavigationBarBackground = NSClassFromString(@"_UINavigationBarBackground");
+            if (_UINavigationBarBackground != nil) {
+                if ([view isKindOfClass:_UINavigationBarBackground] == NO) {
+                    view.alpha = alpha;
+                }
+            }
+        }
+        else {
+            // 这里如果不做判断的话，会显示 backIndicatorImage
+            if ([view isKindOfClass:NSClassFromString(@"_UINavigationBarBackIndicatorView")] == NO) {
+                Class _UIBarBackgroundClass = NSClassFromString(@"_UIBarBackground");
+                if (_UIBarBackgroundClass != nil) {
+                    if ([view isKindOfClass:_UIBarBackgroundClass] == NO) {
+                        view.alpha = alpha;
+                    }
+                }
+                
+                Class _UINavigationBarBackground = NSClassFromString(@"_UINavigationBarBackground");
+                if (_UINavigationBarBackground != nil) {
+                    if ([view isKindOfClass:_UINavigationBarBackground] == NO) {
+                        view.alpha = alpha;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @end

@@ -9,13 +9,17 @@
 #import "ViewController.h"
 #import "UINavigationController+NavigationBarHiddenAnimation.h"
 
-#define NAVBAR_TRANSLATION_POINT 0
+#define NAVBAR_TRANSLATION_POINT -64
 #define NavBarHeight 44
 
 @interface ViewController () <UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (nonatomic, assign) CGFloat lastContentOffset;
+
+@property (nonatomic, assign) CGFloat rightDistance;
+@property (nonatomic, assign) CGFloat leftDistance;
 
 @end
 
@@ -34,6 +38,15 @@
     [self.navigationController.navigationBar addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
     [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsCompact];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+    UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+    self.rightDistance = self.navigationController.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
+    self.leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -75,37 +88,58 @@
 //    }
 //}
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    NSLog(@"scrollView.contentOffset.y = %lf", scrollView.contentOffset.y);
     CGFloat offsetY = scrollView.contentOffset.y;
-    // 向上滑动的距离
-    CGFloat scrollUpHeight = offsetY - NAVBAR_TRANSLATION_POINT;
-    // 除数表示 -> 导航栏从完全不透明到完全透明的过渡距离
-    CGFloat progress = scrollUpHeight / NavBarHeight;
-    if (offsetY > NAVBAR_TRANSLATION_POINT)
-    {
-        if (scrollUpHeight > 44)
-        {
-            [self setNavigationBarTransformProgress:1];
+    
+//    if (offsetY >= -64) {
+        if (self.lastContentOffset > scrollView.contentOffset.y) {
+            // 向下滚动
+            if (offsetY + 64 < 0) {
+                UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+                UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+                rightButtonBarView.transform = CGAffineTransformIdentity;
+                leftButtonBarView.transform = CGAffineTransformIdentity;
+            } else {
+                NSLog(@"alpha = %lf", 1 - (offsetY + 64) / 14);
+                [self setNavigationBarButtonItemsAnimationWithTranslationY:(offsetY + 64)];
+                [self.navigationController setBarButtonItemsAlpha:1 - (offsetY + 64) / 14 hasSystemBackIndicator:NO];
+            }
+        } else if (self.lastContentOffset < scrollView.contentOffset.y) {
+            // 向上滚动
+            if (offsetY + 64 < 0) {
+                UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+                UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+                rightButtonBarView.transform = CGAffineTransformIdentity;
+                leftButtonBarView.transform = CGAffineTransformIdentity;
+            } else {
+                NSLog(@"alpha = %lf", 1 - (offsetY + 64) / 14);
+                [self setNavigationBarButtonItemsAnimationWithTranslationY:(offsetY + 64)];
+                [self.navigationController setBarButtonItemsAlpha:1 - (offsetY + 64) / 14 hasSystemBackIndicator:NO];
+            }
         }
-        else
-        {
-            [self setNavigationBarTransformProgress: progress];
-        }
-    }
-    else
-    {
-        [self setNavigationBarTransformProgress:0];
-    }
+        [self.navigationController setTranslationY:-(offsetY + 64)];
+//    }
+    self.lastContentOffset = scrollView.contentOffset.y;
 }
 
-- (void)setNavigationBarTransformProgress:(CGFloat)progress
-{
+//- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+//    if (self.lastContentOffset > scrollView.contentOffset.y) {
+//        // 向下滚动
+//
+//    } else if (self.lastContentOffset < scrollView.contentOffset.y) {
+//        // 向上滚动
+//
+//    }
+//}
+
+- (void)setNavigationBarTransformProgress:(CGFloat)progress {
+    NSLog(@"NavBarHeight * progress = %lf", NavBarHeight * progress);
     [self.navigationController setTranslationY:(-NavBarHeight * progress)];
     // 没有系统返回按钮，所以 hasSystemBackIndicator = NO
     // 如果这里不设置为NO，你会发现，导航栏无缘无故多出来一个返回按钮
 //    [self.navigationController wr_setBarButtonItemsAlpha:(1 - progress) hasSystemBackIndicator:NO];
-    [self.navigationController animation_setNavigationBarHidden:<#(BOOL)#> translationY:(-NavBarHeight * progress)];
+    
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -113,10 +147,30 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if (self.lastContentOffset > scrollView.contentOffset.y) {
+        // 向下滚动
+        UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+        UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+        rightButtonBarView.transform = CGAffineTransformIdentity;
+        leftButtonBarView.transform = CGAffineTransformIdentity;
+    } else if (self.lastContentOffset < scrollView.contentOffset.y) {
+        // 向上滚动
+        
+    }
     [self showBottomView];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    if (self.lastContentOffset > scrollView.contentOffset.y) {
+        // 向下滚动
+        UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+        UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+        rightButtonBarView.transform = CGAffineTransformIdentity;
+        leftButtonBarView.transform = CGAffineTransformIdentity;
+    } else if (self.lastContentOffset < scrollView.contentOffset.y) {
+        // 向上滚动
+        
+    }
     [self showBottomView];
 }
 
@@ -134,6 +188,27 @@
     } completion:^(BOOL finished) {
         
     }];
+}
+
+- (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY {
+    UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+    UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+    UIView *titleView = [self.navigationController getTitleLabel];
+//    if (CGRectGetMaxX(leftButtonBarView.frame) - self.leftDistance > 2) {
+//        return;
+//    }
+   
+    CGFloat rightDistance = self.rightDistance * translationY / 14;
+    CGFloat leftDistance = self.leftDistance * translationY / 14;
+    
+    NSLog(@"rightDistance = %lf , leftDistance = %lf", rightDistance, leftDistance);
+    
+    //    rightButtonBarView.transform = CGAffineTransformTranslate(rightButtonBarView.transform, rightDistance, 0);
+    rightButtonBarView.transform = CGAffineTransformMakeTranslation(rightDistance, translationY);
+    //    leftButtonBarView.transform = CGAffineTransformTranslate(leftButtonBarView.transform, -leftDistance, 0);
+    leftButtonBarView.transform = CGAffineTransformMakeTranslation(-leftDistance, translationY);
+    titleView.transform = CGAffineTransformMakeTranslation(0, translationY);
+    NSLog(@"titleView = %@", titleView);
 }
 
 

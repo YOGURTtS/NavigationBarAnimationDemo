@@ -16,5 +16,16 @@
  
 - (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY;
 
+- (UIView *)getRightButtonBarView;
+
+- (UIView *)getLeftButtonBarView;
+
+- (UILabel *)getTitleLabel;
+
+- (void)setBarButtonItemsAlpha:(CGFloat)alpha hasSystemBackIndicator:(BOOL)hasSystemBackIndicator;
+
+@property (nonatomic, assign) CGFloat rightDistance;
+@property (nonatomic, assign) CGFloat leftDistance;
+
 
 @end
