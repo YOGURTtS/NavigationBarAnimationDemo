@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		783FEF4E2150F4220076AB45 /* EHINavigationBarAnimatedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 783FEF4D2150F4220076AB45 /* EHINavigationBarAnimatedView.m */; };
 		7890D62521378109007D6AAE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7890D62421378109007D6AAE /* AppDelegate.m */; };
 		7890D62821378109007D6AAE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7890D62721378109007D6AAE /* ViewController.m */; };
 		7890D62B21378109007D6AAE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7890D62921378109007D6AAE /* Main.storyboard */; };
@@ -17,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		783FEF4C2150F4220076AB45 /* EHINavigationBarAnimatedView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EHINavigationBarAnimatedView.h; sourceTree = "<group>"; };
+		783FEF4D2150F4220076AB45 /* EHINavigationBarAnimatedView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EHINavigationBarAnimatedView.m; sourceTree = "<group>"; };
 		7890D62021378108007D6AAE /* NavigationBarAnimationDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavigationBarAnimationDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7890D62321378109007D6AAE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7890D62421378109007D6AAE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -67,6 +70,8 @@
 				7890D62721378109007D6AAE /* ViewController.m */,
 				7890D63921378AAA007D6AAE /* UINavigationController+NavigationBarHiddenAnimation.h */,
 				7890D63A21378AAA007D6AAE /* UINavigationController+NavigationBarHiddenAnimation.m */,
+				783FEF4C2150F4220076AB45 /* EHINavigationBarAnimatedView.h */,
+				783FEF4D2150F4220076AB45 /* EHINavigationBarAnimatedView.m */,
 				7890D62921378109007D6AAE /* Main.storyboard */,
 				7890D62C2137810A007D6AAE /* Assets.xcassets */,
 				7890D62E2137810A007D6AAE /* LaunchScreen.storyboard */,
@@ -147,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7890D62821378109007D6AAE /* ViewController.m in Sources */,
+				783FEF4E2150F4220076AB45 /* EHINavigationBarAnimatedView.m in Sources */,
 				7890D6332137810A007D6AAE /* main.m in Sources */,
 				7890D63B21378AAA007D6AAE /* UINavigationController+NavigationBarHiddenAnimation.m in Sources */,
 				7890D62521378109007D6AAE /* AppDelegate.m in Sources */,
