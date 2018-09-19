@@ -8,6 +8,19 @@
 
 #import "EHINavigationBarAnimatedView.h"
 
+#define ScreenHeight         [UIScreen mainScreen].bounds.size.height
+
+#define iPhoneX              (ScreenHeight == 812.0f || ScreenHeight == 896.0f)
+
+#define AdaptNaviHeight      (iPhoneX ? 24 : 0)
+
+#define AdaptTabHeight       (iPhoneX ? 34 : 0)
+
+#define NAVIHEIGHT           (iPhoneX ? 88 : 64)
+
+#define TABBARHEIGHT         (iPhoneX ? 83 : 49)
+
+
 @interface EHINavigationBarAnimatedView ()
 
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -31,7 +44,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.titleLabel.text = title;
-//        [self.rightButton setImage:rightButtonImage forState:UIControlStateNormal];
+        [self.rightButton setImage:rightButtonImage forState:UIControlStateNormal];
         [self setupSubviews];
         _rightDistance = self.bounds.size.width - CGRectGetMinX(self.rightButton.frame);
         _leftDistance = CGRectGetMaxX(self.backButton.frame);
@@ -66,13 +79,19 @@
 
 #pragma mark - methods
 
-- (void)setNavigationBarButtonItemsAnimationWithTranslationY:(CGFloat)translationY {
+- (void)navBarViewAnimatedWithTranslationY:(CGFloat)translationY {
+    CGFloat rightDistance = self.rightDistance * translationY / 24;
+    CGFloat leftDistance = self.leftDistance * translationY / 24;
+    CGFloat alpha = 1 - translationY / 44 * 1.5;
+    self.alpha = alpha;
+    self.rightButton.transform = CGAffineTransformMakeTranslation(rightDistance, 0);
+    self.backButton.transform = CGAffineTransformMakeTranslation(-leftDistance, 0);
+}
 
-    
-
-//    self.rightButton.transform = CGAffineTransformMakeTranslation(rightDistance, 0);
-//
-//    self.backButton.transform = CGAffineTransformMakeTranslation(-leftDistance, 0);
+- (void)resetNavBarViewTransform {
+    // TODO: implement
+    self.rightButton.transform = CGAffineTransformIdentity;
+    self.backButton.transform = CGAffineTransformIdentity;
 }
 
 #pragma mark - properties
@@ -90,14 +109,15 @@
 
 - (UIButton *)backButton {
     if (!_backButton) {
-        _backButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_backButton setImage:[UIImage imageNamed:@"step2NavShareView"] forState:UIControlStateNormal];
     }
     return _backButton;
 }
 
 - (UIButton *)rightButton {
     if (!_rightButton) {
-        _rightButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        _rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     }
     return _rightButton;
 }

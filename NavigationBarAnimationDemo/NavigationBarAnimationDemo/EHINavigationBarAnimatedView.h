@@ -12,4 +12,8 @@
 
 - (instancetype)initWithFrame:(CGRect)frame title:(NSString *)title rightButtonImage:(UIImage *)rightButtonImage;
 
+- (void)navBarViewAnimatedWithTranslationY:(CGFloat)translationY;
+
+- (void)resetNavBarViewTransform;
+
 @end

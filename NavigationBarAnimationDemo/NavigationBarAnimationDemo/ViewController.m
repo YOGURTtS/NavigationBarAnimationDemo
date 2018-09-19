@@ -10,8 +10,20 @@
 #import "UINavigationController+NavigationBarHiddenAnimation.h"
 #import "EHINavigationBarAnimatedView.h"
 
-#define NAVBAR_TRANSLATION_POINT -64
-#define NavBarHeight 44
+#define ScreenHeight         [UIScreen mainScreen].bounds.size.height
+
+#define iPhoneX              (ScreenHeight == 812.0f || ScreenHeight == 896.0f)
+
+#define AdaptNaviHeight      (iPhoneX ? 24 : 0)
+
+#define AdaptTabHeight       (iPhoneX ? 34 : 0)
+
+#define NAVIHEIGHT           (iPhoneX ? 88 : 64)
+
+#define TABBARHEIGHT         (iPhoneX ? 83 : 49)
+
+//#define NAVBAR_TRANSLATION_POINT -64
+//#define NavBarHeight 44
 
 @interface ViewController () <UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource>
 
@@ -32,27 +44,27 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.title = @"首页";
-    _navView = [[EHINavigationBarAnimatedView alloc] initWithFrame:CGRectMake(0, 20, self.view.bounds.size.width, 44) title:@"首页" rightButtonImage:nil];
-    [self.view addSubview:_navView];
+    _navView = [[EHINavigationBarAnimatedView alloc] initWithFrame:CGRectMake(0, 20 + AdaptNaviHeight, self.view.bounds.size.width, 44) title:@"首页" rightButtonImage:[UIImage imageNamed:@"step2NavShareView"]];
+    [self.view insertSubview:_navView belowSubview:self.tableView];
     
     self.tableView.frame = CGRectMake(0, CGRectGetMaxY(_navView.frame), self.view.bounds.size.width, self.view.bounds.size.height);
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.delegate = self;
-//    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:nil];
-//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:nil];
-//    [self.navigationController.navigationBar addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
-//    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsCompact];
-//    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:nil];
+    //    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:nil];
+    //    [self.navigationController.navigationBar addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
+    //    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsCompact];
+    //    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-//    UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
-//    UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
-//    self.rightDistance = self.navigationController.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
-//    self.leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
+    //    UIView *rightButtonBarView = [self.navigationController getRightButtonBarView];
+    //    UIView *leftButtonBarView = [self.navigationController getLeftButtonBarView];
+    //    self.rightDistance = self.navigationController.navigationBar.frame.size.width - CGRectGetMinX(rightButtonBarView.frame);
+    //    self.leftDistance = CGRectGetMaxX(leftButtonBarView.frame);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -88,8 +100,23 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    
+    CGFloat offsetY = scrollView.contentOffset.y;
+    NSLog(@"offsetY = %lf", offsetY);
+    if (offsetY >= -NAVIHEIGHT) {
+        if (offsetY < 0) {
+            [self.navView resetNavBarViewTransform];
+        } else {
+            [self.navView navBarViewAnimatedWithTranslationY:offsetY];
+        }
+        if (offsetY < 44) {
+            self.tableView.frame = CGRectMake(0, CGRectGetMaxY(self.navView.frame) - offsetY, self.view.bounds.size.width, self.view.bounds.size.height - (CGRectGetMaxY(self.navView.frame) - offsetY));            
+        }
+    }
+    self.lastContentOffset = scrollView.contentOffset.y;
 }
+
+
+
 
 //- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 //    NSLog(@"%f", scrollView.contentOffset.y);
